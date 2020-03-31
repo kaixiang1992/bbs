@@ -1,11 +1,14 @@
 from flask import Blueprint, views, render_template, request, session, redirect, url_for, flash
 from .froms import LoginForm
 from .models import CmsUser
+from .decorators import login_required
+import config
 
 bp = Blueprint('cms', __name__, url_prefix='/cms')
 
 
 @bp.route('/')
+@login_required
 def homepage():
     return 'cms homepage'
 
@@ -22,7 +25,7 @@ class LoginView(views.MethodView):
             remember = form.remember.data
             user = CmsUser.query.filter(CmsUser.email == email).one_or_none()
             if user and user.check_password(password):  # TODO: 账号密码校验成功
-                session['user_id'] = user.id
+                session[config.CONFIG_USER_ID] = user.id
                 if remember == 1:  # TODO: 记住密码
                     session.permanent = True
                 flash(message='登录成功')
