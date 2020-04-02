@@ -10,9 +10,10 @@ bp = Blueprint('cms', __name__, url_prefix='/cms')
 @bp.route('/')
 @login_required
 def homepage():
-    return 'cms homepage'
+    return render_template('cms/cms_index.html')
 
 
+# TODO: 登录视图函数
 class LoginView(views.MethodView):
     def get(self, messages=None):
         return render_template('cms/login.html', messages=messages)
@@ -40,4 +41,15 @@ class LoginView(views.MethodView):
             return self.get(messages=errors)
 
 
+# TODO: 退出登录视图
+class SignOut(views.MethodView):
+    decorators = [login_required]
+
+    def get(self):
+        # del session[config.CONFIG_USER_ID]
+        session.clear()
+        return redirect(url_for(endpoint='cms.login'))
+
+
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))
+bp.add_url_rule('/signout/', endpoint='signout', view_func=SignOut.as_view('signout'))

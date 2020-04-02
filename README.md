@@ -57,5 +57,11 @@ python flask Actual combat
     * 涉及知识点
         * [装饰器](http://wangkaixiang.cn/python-advance/di-er-zhang-ff1a-zhuang-shi-qi/di-er-jie-ff1a-zhuang-shi-qi.html)
     * 563.【Flask项目实战】cms后台登录限制 `2020/03/30 22:48`
+* V1.0.4
+    * 涉及知识点
+        * [宏](http://wangkaixiang.cn/python-flask/di-si-zhang-ff1a-flask-ru-men-ff08-mo-ban-ff09/di-liu-jie-ff1a-hong-he-import-yu-ju.html)
+        * [上下文](http://wangkaixiang.cn/python-flask/di-shi-zhang-ff1a-shang-xia-wen.html)
+    * 564.【Flask项目实战】cms后台模版渲染完成 `2020/03/31 22:40`
+    * 565.【Flask项目实战】cms用户名渲染和注销功能实现 `2020/04/02 22:55`
 
 ##### 欠：10+40+12 = 60节课
