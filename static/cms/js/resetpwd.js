@@ -29,17 +29,17 @@ $(function () {
                 // code==200
                 // code != 200
                 if(data['code'] == 200){
-                    zlalert.alertSuccessToast("恭喜！密码修改成功！");
+                    // zlalert.alertSuccessToast("恭喜！密码修改成功！");
                     oldpwdE.val("");
                     newpwdE.val("");
                     newpwd2E.val("");
                 }else{
                     var message = data['message'];
-                    zlalert.alertInfo(message);
+                    // zlalert.alertInfo(message);
                 }
             },
             'fail': function (error) {
-                zlalert.alertNetworkError();
+                // zlalert.alertNetworkError();
             }
         });
     });

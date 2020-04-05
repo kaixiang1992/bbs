@@ -61,7 +61,15 @@ python flask Actual combat
     * 涉及知识点
         * [宏](http://wangkaixiang.cn/python-flask/di-si-zhang-ff1a-flask-ru-men-ff08-mo-ban-ff09/di-liu-jie-ff1a-hong-he-import-yu-ju.html)
         * [上下文](http://wangkaixiang.cn/python-flask/di-shi-zhang-ff1a-shang-xia-wen.html)
+        * [模板继承](http://wangkaixiang.cn/python-flask/di-si-zhang-ff1a-flask-ru-men-ff08-mo-ban-ff09/di-ba-jie-ff1a-mo-ban-ji-cheng.html)
+        * [set语句](http://wangkaixiang.cn/python-flask/di-si-zhang-ff1a-flask-ru-men-ff08-mo-ban-ff09/di-qijie-ff1a-include-he-set-yu-ju.html)
+        * [CSRF保护](http://wangkaixiang.cn/python-flask/di-jiu-zhang-ff1a-flask-wtf.html)
     * 564.【Flask项目实战】cms后台模版渲染完成 `2020/03/31 22:40`
     * 565.【Flask项目实战】cms用户名渲染和注销功能实现 `2020/04/02 22:55`
-
-##### 欠：10+40+12 = 60节课
+    * 566.【Flask项目实战】cms模版抽离和个人信息页面完成 `2020/04/05 11:29`
+    * 567.【Flask项目实战】cms登录页面CSRF保护 `2020/04/05 15:33`
+    * 568.【Flask项目实战】cms后台修改密码界面布局完成 `2020/04/05 16:50`
+    * 569.【Flask项目实战】cms后台修改密码ajax功能完成 `2020/04/05 17:10`
+    * 570.【Flask项目实战】cms后台密码修改服务器逻完成 `2020/04/05 17:59`
+    * 571.【Flask项目实战】优化json数据的返回 `2020/04/05 22:22`
+    * 572.【Flask项目实战】sweetalert提示框用法讲解 `2020/04/05 22:58`
