@@ -92,7 +92,19 @@ class ResetPwdView(views.MethodView):
             return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
 
 
+# TODO: 修改邮箱
+class ResetEmailView(views.MethodView):
+    decorators = [login_required]
+
+    def get(self):
+        return render_template('cms/cms_resetemail.html')
+
+    def post(self):
+        pass
+
+
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录
 bp.add_url_rule('/signout/', endpoint='signout', view_func=SignOutView.as_view('signout'))  # TODO: 退出登录
 bp.add_url_rule('/profile/', endpoint='profile', view_func=ProfileView.as_view('profile'))  # TODO: 个人信息
 bp.add_url_rule('/resetpwd/', endpoint='resetpwd', view_func=ResetPwdView.as_view('resetpwd'))  # TODO: 修改密码
+bp.add_url_rule('/resetemail/', endpoint='resetemail', view_func=ResetEmailView.as_view('resetemail'))  # TODO: 修改邮箱
