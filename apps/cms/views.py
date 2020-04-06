@@ -89,7 +89,7 @@ class ResetPwdView(views.MethodView):
                 return restful.success(message='旧密码输入错误', data={})
         else:
             # return jsonify({"code": 400, "data": form.get_all_errors(), "message": ""})
-            return restful.params_error(message="", data=form.get_all_errors())
+            return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
 
 
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录
