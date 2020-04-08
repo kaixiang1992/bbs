@@ -75,4 +75,9 @@ python flask Actual combat
     * 572.【Flask项目实战】sweetalert提示框用法讲解 `2020/04/05 22:58`
     * 573.【Flask项目实战】sweetalert优化修改密码结果反馈 `2020/04/06 23:07`
 * V1.0.5
+    * 涉及知识点
+        * [flask-mail](https://pythonhosted.org/Flask-Mail/)
+        * [string](https://docs.python.org/zh-cn/3.7/library/string.html)
+        * [random](https://docs.python.org/zh-cn/3.7/library/random.html)
     * 574.【Flask项目实战】修改邮箱界面完成 `2020/04/06 23:30`
+    * 575.【Flask项目实战】Flask-Mail的使用以及邮箱配置 `2020/04/08 22:26`

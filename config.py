@@ -7,3 +7,11 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = os.urandom(24)
 # TODO: user_id key
 CONFIG_USER_ID = 'abajghjgj'
+# TODO: 邮箱配置
+MAIL_SERVER = 'smtp.qq.com'
+MAIL_PORT = 465
+MAIL_USE_SSL = True
+MAIL_USERNAME = "1058628890@qq.com"
+MAIL_PASSWORD = "xykgytfhsvumbfgg"
+MAIL_DEFAULT_SENDER = "1058628890@qq.com"
+

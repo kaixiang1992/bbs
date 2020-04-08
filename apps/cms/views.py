@@ -2,8 +2,12 @@ from flask import Blueprint, views, render_template, request, session, redirect,
 from .froms import LoginForm, ResetPwdForm
 from .models import CmsUser, db
 from .decorators import login_required
+from flask_mail import Message
+from exts import mail
 import config
 from untils import restful
+import string
+import random
 
 bp = Blueprint('cms', __name__, url_prefix='/cms')
 
@@ -103,8 +107,45 @@ class ResetEmailView(views.MethodView):
         pass
 
 
+# TODO: 测试发送邮箱
+class EmailView(views.MethodView):
+    decorators = [login_required]
+
+    def get(self):
+        message = Message('测试', recipients=['1058628890@qq.com', '31353wang@sina.com', '694588195@qq.com'],
+                          body='flask mail发送的邮箱验证码：1234', sender='1058628890@qq.com')
+        mail.send(message=message)
+        return 'success'
+
+
+# TODO: 发送邮箱验证码
+class EmailCaptchaView(views.MethodView):
+    decorators = [login_required]
+
+    def get(self):
+        email = request.args.get('email')
+        if not email:
+            return restful.params_error(message='邮箱输入不能为空')
+        captcha = list(string.ascii_letters)  # TODO: [a-zA-z]拼连
+        captcha.extend(list(string.digits))  # TODO: 字符串 '0123456789'拼连
+        random_list = random.sample(captcha, 6)  # TODO: 随机从列表中抽取6个元素
+        captcha_str = ''.join(random_list)
+        message = Message('邮箱验证码',
+                          recipients=[email, '1058628890@qq.com', '31353wang@sina.com', '694588195@qq.com'],
+                          body='您的验证码为：%s，有效期为30分钟!' % captcha_str,
+                          sender='1058628890@qq.com')
+        try:  # TODO: 捕获发送验证码异常
+            mail.send(message=message)
+        except:
+            return restful.server_error(message='服务器错误，发送失败.')
+        return restful.success(message='验证码发送成功')
+
+
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录
 bp.add_url_rule('/signout/', endpoint='signout', view_func=SignOutView.as_view('signout'))  # TODO: 退出登录
 bp.add_url_rule('/profile/', endpoint='profile', view_func=ProfileView.as_view('profile'))  # TODO: 个人信息
 bp.add_url_rule('/resetpwd/', endpoint='resetpwd', view_func=ResetPwdView.as_view('resetpwd'))  # TODO: 修改密码
 bp.add_url_rule('/resetemail/', endpoint='resetemail', view_func=ResetEmailView.as_view('resetemail'))  # TODO: 修改邮箱
+bp.add_url_rule('/email/', endpoint='email', view_func=EmailView.as_view('email'))  # TODO: 发送邮箱
+# TODO: 发送邮箱验证码
+bp.add_url_rule('/email_captcha/', endpoint='emailcaptcha', view_func=EmailCaptchaView.as_view('emailcaptcha'))
