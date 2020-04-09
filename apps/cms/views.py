@@ -1,9 +1,10 @@
 from flask import Blueprint, views, render_template, request, session, redirect, url_for, flash, jsonify, g
-from .froms import LoginForm, ResetPwdForm
+from .froms import LoginForm, ResetPwdForm, ResetEamilForm
 from .models import CmsUser, db
 from .decorators import login_required
 from flask_mail import Message
 from exts import mail
+from untils import cacheuntil
 import config
 from untils import restful
 import string
@@ -104,7 +105,16 @@ class ResetEmailView(views.MethodView):
         return render_template('cms/cms_resetemail.html')
 
     def post(self):
-        pass
+        form = ResetEamilForm(request.form)
+        if form.validate():
+            email = form.email.data
+            user = g.cms_user
+            # TODO: 提交数据更改
+            user.email = email
+            db.session.commit()
+            return restful.success(message='邮箱更改成功')
+        else:  # TODO: 参数错误
+            return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
 
 
 # TODO: 测试发送邮箱
@@ -131,13 +141,15 @@ class EmailCaptchaView(views.MethodView):
         random_list = random.sample(captcha, 6)  # TODO: 随机从列表中抽取6个元素
         captcha_str = ''.join(random_list)
         message = Message('邮箱验证码',
-                          recipients=[email, '1058628890@qq.com', '31353wang@sina.com', '694588195@qq.com'],
-                          body='您的验证码为：%s，有效期为30分钟!' % captcha_str,
+                          recipients=[email],
+                          body='您的验证码为：%s，有效期为5分钟!' % captcha_str,
                           sender='1058628890@qq.com')
         try:  # TODO: 捕获发送验证码异常
             mail.send(message=message)
         except:
             return restful.server_error(message='服务器错误，发送失败.')
+        # TODO: redis存储对应邮箱验证码
+        cacheuntil.set(key=email, value=captcha_str, ex=300)
         return restful.success(message='验证码发送成功')
 
 

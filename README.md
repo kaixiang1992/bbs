@@ -79,5 +79,9 @@ python flask Actual combat
         * [flask-mail](https://pythonhosted.org/Flask-Mail/)
         * [string](https://docs.python.org/zh-cn/3.7/library/string.html)
         * [random](https://docs.python.org/zh-cn/3.7/library/random.html)
+        * [redis](http://wangkaixiang.cn/python-flask/di-shi-sizhang-ff1a-redis-jiao-cheng.html)
+        * [字符串编码解码](http://wangkaixiang.cn/python3/liu-3001-zi-fu-chuan.html)
     * 574.【Flask项目实战】修改邮箱界面完成 `2020/04/06 23:30`
     * 575.【Flask项目实战】Flask-Mail的使用以及邮箱配置 `2020/04/08 22:26`
+    * 576.【Flask项目实战】发送邮箱验证码 `2020/04/08 23:06`
+    * 577.【Flask项目实战】修改邮箱功能完成 `2020/04/09 22:35`
