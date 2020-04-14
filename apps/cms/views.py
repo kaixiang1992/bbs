@@ -1,7 +1,7 @@
 from flask import Blueprint, views, render_template, request, session, redirect, url_for, flash, jsonify, g
 from .froms import LoginForm, ResetPwdForm, ResetEamilForm
-from .models import CmsUser, db
-from .decorators import login_required
+from .models import CmsUser, db, CMSPersmission
+from .decorators import login_required, permission_required
 from flask_mail import Message
 from exts import mail
 from untils import cacheuntil
@@ -151,6 +151,54 @@ class EmailCaptchaView(views.MethodView):
         # TODO: redis存储对应邮箱验证码
         cacheuntil.set(key=email, value=captcha_str, ex=300)
         return restful.success(message='验证码发送成功')
+
+
+# TODO: 板块管理
+@bp.route('/boards/')
+@login_required
+@permission_required(CMSPersmission.BOARDER)
+def boards():
+    return render_template('cms/cms_boards.html')
+
+
+# TODO: 评论管理
+@bp.route('/comments/')
+@login_required
+@permission_required(CMSPersmission.COMMENTER)
+def comments():
+    return render_template('cms/cms_comments.html')
+
+
+# TODO: CMS用户组管理
+@bp.route('/croles/')
+@login_required
+@permission_required(CMSPersmission.ALL_PERMISSION)
+def croles():
+    return render_template('cms/cms_croles.html')
+
+
+# TODO: CMS用户管理
+@bp.route('/cusers/')
+@login_required
+@permission_required(CMSPersmission.CMSUSER)
+def cusers():
+    return render_template('cms/cms_cusers.html')
+
+
+# TODO: 前台用户管理
+@bp.route('/fusers/')
+@login_required
+@permission_required(CMSPersmission.FRONTUSER)
+def fusers():
+    return render_template('cms/cms_fusers.html')
+
+
+# TODO: 帖子管理
+@bp.route('/posts/')
+@login_required
+@permission_required(CMSPersmission.POSTER)
+def posts():
+    return render_template('cms/cms_posts.html')
 
 
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录

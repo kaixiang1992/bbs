@@ -20,6 +20,22 @@
         <td>{{ user.email }}</td>
     </tr>
     <tr>
+        <td>角色</td>
+        <td>{% for role in user.roles -%}
+            {{ role.name -}}
+            {{ '' if loop.last else ', ' -}}
+        {%- endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td>权限</td>
+        <td>{% for role in user.roles -%}
+            {{ role.desc -}}
+            {{ '' if loop.last else '/ ' -}}
+        {%- endfor %}
+        </td>
+    </tr>
+    <tr>
         <td>加入时间</td>
         <td>{{ user.create_time }}</td>
     </tr>
