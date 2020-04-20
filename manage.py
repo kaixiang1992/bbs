@@ -3,6 +3,7 @@ from flask_migrate import Migrate, MigrateCommand
 from app import create_app
 from exts import db
 from apps.cms import models as cms_model
+from apps.front import models as front_model
 
 manager = Manager(app=create_app())
 Migrate(app=create_app(), db=db)
@@ -85,6 +86,18 @@ def test_user_permission(email, id):
             print('id为：%s，角色不存在' % id)
     else:
         print('%s 邮箱不存在！' % email)
+
+
+# TODO: 初始化前端用户
+@manager.option('-t', '--telephone', dest="telephone")
+@manager.option('-u', '--username', dest="username")
+@manager.option('-p', '--password', dest="password")
+@manager.option('-e', '--email', dest="email")
+def init_front_user(telephone, username, password, email):
+    front_user = front_model.FrontUserModel(telephone=telephone, username=username, password=password, email=email)
+    db.session.add(front_user)
+    db.session.commit()
+    print('初始化前端用户成功...')
 
 
 if __name__ == '__main__':
