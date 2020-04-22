@@ -38,8 +38,7 @@
         <div class="input-group">
             <input type="text" class="form-control" name="graph_captcha" placeholder="图形验证码">
             <span class="input-group-addon captcha-addon">
-{#                src="{{ url_for('common.graph_captcha') }}"#}
-                <img id="captcha-img" class="captcha-img"  alt="">
+                <img id="captcha-img" class="captcha-img" src="{{ url_for('front.CaptchaView') }}"  alt="">
             </span>
         </div>
     </div>

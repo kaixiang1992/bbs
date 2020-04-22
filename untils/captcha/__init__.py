@@ -4,6 +4,8 @@ import string
 # ImageDraw：一个画笔
 # ImageFont:画笔的字体
 from PIL import Image, ImageDraw, ImageFont
+import os
+import sys
 
 
 # pip install pillow
@@ -46,7 +48,7 @@ class Captcha(object):
     @classmethod
     def __gene_random_color(cls, start=0, end=255):
         random.seed()
-        return (random.randint(start, end), random.randint(start, end), random.randint(start, end))
+        return random.randint(start, end), random.randint(start, end), random.randint(start, end)
 
     # 随机选择一个字体
     @classmethod
@@ -58,7 +60,8 @@ class Captcha(object):
             'verdana.ttf'
         ]
         font = random.choice(fonts)
-        return 'utils/captcha/' + font
+        # return 'utils/captcha/' + font
+        return '%s\%s' % (os.path.dirname(__file__), font)
 
     # 用来随机生成一个字符串(包括英文和数字)
     @classmethod
