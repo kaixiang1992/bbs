@@ -9,3 +9,7 @@ class BaseForm(Form):
     def get_all_errors(self):
         errors = self.errors
         return errors
+
+    # TODO: 重写父类validate方法
+    def validate(self):
+        return super(BaseForm, self).validate()
