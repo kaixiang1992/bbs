@@ -20,7 +20,7 @@ class FrontUserModel(db.Model):
     telephone = db.Column(db.String(11), nullable=False, unique=True)
     username = db.Column(db.String(50), nullable=False)
     _password = db.Column(db.String(100), nullable=False, name="password")
-    email = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(50), unique=True)
     realname = db.Column(db.String(50))
     avatar = db.Column(db.String(100))
     signature = db.Column(db.String(100))

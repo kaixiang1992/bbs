@@ -2,39 +2,42 @@ from flask import (
     Blueprint,
     views,
     render_template,
-    make_response
+    request
 )
-from untils.captcha import Captcha
-from io import BytesIO
-
+from exts import db
+from .forms import SignupFrom
+from .models import FrontUserModel
+from untils import restful, safeutils
 
 bp = Blueprint('front', __name__)
 
 
 @bp.route('/')
 def homepage():
-    return 'homepage'
+    return render_template('front/front_test.html')
 
 
 # TODO: 注册页面视图
 class SignupView(views.MethodView):
     def get(self):
+        referrer = request.referrer
+        cururl = request.url
+        if referrer and referrer != cururl and safeutils.is_safe_url(referrer):
+            return render_template('front/front_signup.html', return_to=referrer)
         return render_template('front/front_signup.html')
 
-
-# TODO: 图形验证码视图
-@bp.route('/captcha/')
-def CaptchaView():
-    text, image = Captcha.gene_graph_captcha()
-    out = BytesIO()
-    # TODO: 将图片保存到IO中格式png
-    image.save(out, 'png')
-    # TODO: 保存完毕后，移动指针到起始位置
-    out.seek(0)
-    # TODO: 将IO读取出来转为image/png响应
-    resp = make_response(out.read())
-    resp.content_type = 'image/png'
-    return resp
+    def post(self):
+        form = SignupFrom(request.form)
+        if form.validate():
+            telephone = form.telephone.data
+            username = form.username.data
+            password = form.password1.data
+            user = FrontUserModel(telephone=telephone, username=username, password=password)
+            db.session.add(user)
+            db.session.commit()
+            return restful.success(message='注册成功')
+        else:
+            return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
 
 
 # TODO: 注册页面视图
