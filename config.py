@@ -7,6 +7,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = os.urandom(24)
 # TODO: user_id key
 CONFIG_USER_ID = 'abajghjgj'
+FRONT_USER_ID = 'a56529231332524'
 # TODO: 邮箱配置
 MAIL_SERVER = 'smtp.qq.com'
 MAIL_PORT = 465

@@ -1,6 +1,6 @@
 from apps.froms import BaseForm
 from wtforms import StringField, ValidationError
-from wtforms.validators import Regexp, EqualTo, Length
+from wtforms.validators import Regexp, EqualTo, Length, Optional
 from untils import cacheuntil
 
 
@@ -28,3 +28,10 @@ class SignupFrom(BaseForm):
         graph_captcha_red = cacheuntil.get(graph_captcha.lower()).decode('utf-8')  # TODO: 读取redis缓存图片验证码
         if not graph_captcha_red:
             raise ValidationError(message='图片验证码输入错误')
+
+
+# TODO: 登录表单校验器
+class SigninForm(BaseForm):
+    telephone = StringField(validators=[Regexp(regex=r'1[356789]\d{9}', message='请输入正确的手机号')])  # TODO: 手机号
+    password = StringField(validators=[Regexp(regex=r'\w{8,12}', message='请输入正确的密码')])  # TODO: 密码
+    remember = StringField()    # TODO: 记住我
