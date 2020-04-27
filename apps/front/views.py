@@ -15,6 +15,12 @@ import config
 bp = Blueprint('front', __name__)
 
 
+# TODO: 首页视图
+@bp.route('/')
+def homepage():
+    return render_template('front/front_index.html')
+
+
 # TODO: 注册页面视图
 class SignupView(views.MethodView):
     def get(self):
