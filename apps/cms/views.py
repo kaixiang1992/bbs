@@ -201,6 +201,13 @@ def posts():
     return render_template('cms/cms_posts.html')
 
 
+# TODO: 轮播图管理
+@bp.route('/banners')
+@login_required
+def banners():
+    return render_template('cms/cms_banners.html')
+
+
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录
 bp.add_url_rule('/signout/', endpoint='signout', view_func=SignOutView.as_view('signout'))  # TODO: 退出登录
 bp.add_url_rule('/profile/', endpoint='profile', view_func=ProfileView.as_view('profile'))  # TODO: 个人信息
