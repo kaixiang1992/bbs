@@ -4,6 +4,7 @@ from app import create_app
 from exts import db
 from apps.cms import models as cms_model
 from apps.front import models as front_model
+from apps import models as model
 
 manager = Manager(app=create_app())
 Migrate(app=create_app(), db=db)

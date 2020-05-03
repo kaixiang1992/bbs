@@ -42,3 +42,16 @@ class ResetEamilForm(BaseForm):
         if captcha_cache and captcha_cache.lower() == captcha.lower():  # TODO: 忽略验证码大小写比对
             return True
         raise ValidationError(message='邮箱验证码输入错误')
+
+
+# TODO: 新增轮播图片校验器
+class AddBanerForm(BaseForm):
+    name = StringField(validators=[DataRequired(message='图片名称必须填写')])
+    image_url = StringField(validators=[DataRequired(message='图片地址必须填写')])
+    link_url = StringField(validators=[DataRequired(message='跳转链接必须填写')])
+    priority = StringField(validators=[DataRequired(message='权重必须填写')])
+
+
+# TODO: 更改轮播图片校验器
+class UpdateBannerForm(AddBanerForm):
+    banner_id = StringField(validators=[DataRequired(message='图片ID不能为空')])

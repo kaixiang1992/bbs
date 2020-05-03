@@ -15,6 +15,10 @@
         .top-box button{
             float: right;
         }
+        .banner_image_url,.banner_link_url{
+            width: 300px;
+            word-break: break-all;
+        }
     </style>
 {% endblock %}
 
@@ -38,7 +42,20 @@
         </tr>
     </thead>
     <tbody>
-        <tr></tr>
+        {% for banner in banners %}
+            <tr data-name="{{ banner.name }}" data-image="{{ banner.image_url }}" data-link="{{ banner.link_url }}"
+                data-priority="{{ banner.priority }}" data-id="{{ banner.id }}">
+                <td>{{ banner.name }}</td>
+                <td class="banner_image_url"><a href="{{ banner.image_url }}" target="_blank">{{ banner.image_url }}</a></td>
+                <td class="banner_link_url"><a href="{{ banner.link_url }}" target="_blank">{{ banner.link_url }}</a></td>
+                <td>{{ banner.priority }}</td>
+                <td>{{ banner.create_time }}</td>
+                <td>
+                    <button class="btn btn-default btn-xs edit-banner-btn">编辑</button>
+                    <button class="btn btn-danger btn-xs delete-banner-btn">删除</button>
+                </td>
+            </tr>
+        {% endfor %}
     </tbody>
 </table>
 <!-- Modal -->

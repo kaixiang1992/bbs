@@ -1,6 +1,7 @@
 from flask import Blueprint, views, render_template, request, session, redirect, url_for, flash, jsonify, g
-from .froms import LoginForm, ResetPwdForm, ResetEamilForm
+from .froms import LoginForm, ResetPwdForm, ResetEamilForm, AddBanerForm, UpdateBannerForm
 from .models import CmsUser, db, CMSPersmission
+from ..models import Banners
 from .decorators import login_required, permission_required
 from flask_mail import Message
 from exts import mail
@@ -205,7 +206,68 @@ def posts():
 @bp.route('/banners')
 @login_required
 def banners():
-    return render_template('cms/cms_banners.html')
+    banners = Banners.query.order_by(Banners.create_time.desc()).all()
+    return render_template('cms/cms_banners.html', banners=banners)
+
+
+# TODO: 新增banner
+@bp.route('/abanner/', methods=['POST'])
+@login_required
+def abanner():
+    form = AddBanerForm(request.form)
+    if form.validate():
+        name = form.name.data
+        image_url = form.image_url.data
+        link_url = form.link_url.data
+        priority = form.priority.data
+        banner = Banners(name=name, image_url=image_url, link_url=link_url, priority=priority)
+        db.session.add(banner)
+        db.session.commit()
+        return restful.success(message='轮播新增成功')
+    else:
+        return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
+
+
+# TODO: 更改banner
+@bp.route('/ubanner/', methods=['POST'])
+@login_required
+def ubanner():
+    form = UpdateBannerForm(request.form)
+    if form.validate():
+        banner_id = form.banner_id.data
+        banner = Banners.query.filter_by(id=banner_id).one_or_none()
+        if banner:
+            name = form.name.data
+            image_url = form.image_url.data
+            link_url = form.link_url.data
+            priority = form.priority.data
+            banner.name = name
+            banner.image_url = image_url
+            banner.link_url = link_url
+            banner.priority = priority
+            db.session.commit()
+            return restful.success(message='修改成功')
+        else:
+            return restful.params_error(message='参数错误')
+    else:
+        return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
+
+
+# TODO: 删除banner
+@bp.route('/dbanner/', methods=['POST'])
+@login_required
+def dbanner():
+    banner_id = request.form.get('banner_id')
+    if banner_id:
+        banner = Banners.query.filter_by(id=banner_id).one_or_none()
+        if banner:
+            db.session.delete(banner)
+            db.session.commit()
+            return restful.success(message='删除成功')
+        else:
+            return restful.params_error(message='参数错误')
+    else:
+        return restful.params_error(message='参数错误')
 
 
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录
