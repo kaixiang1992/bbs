@@ -10,6 +10,8 @@ import config
 from untils import restful
 import string
 import random
+import os
+import oss2
 
 bp = Blueprint('cms', __name__, url_prefix='/cms')
 
@@ -268,6 +270,26 @@ def dbanner():
             return restful.params_error(message='参数错误')
     else:
         return restful.params_error(message='参数错误')
+
+
+# TODO: 上传图片
+@bp.route('/uploadimg/', methods=['POST'])
+@login_required
+def uploadimg():
+    file = request.files.get('file')
+    if file is None:
+        return restful.params_error(message='上传图片不能为空')
+    auth = oss2.Auth(os.getenv('ACCESS_KEY_ID'), os.getenv('ACCESS_KEY_SECRET'))
+    endpoint = os.getenv('BUCKET_ENDPOINT')
+    bucket = oss2.Bucket(auth, endpoint, os.getenv('BUCKET_NAME'))
+    res = bucket.put_object(file.filename, file)
+    if res.status == 200:
+        url = bucket.sign_url('GET', file.filename, 60)
+        return restful.success(message='上传图片成功', data={
+            'url': url
+        })
+    else:
+        return restful.params_error(message='上传图片失败')
 
 
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录

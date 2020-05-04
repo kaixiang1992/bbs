@@ -111,13 +111,39 @@ $(function () {
 });
 
 $(function () {
-    zlqiniu.setUp({
-        'domain': 'http://7xqenu.com1.z0.glb.clouddn.com/',
-        'browse_btn': 'upload-btn',
-        'uptoken_url': '/c/uptoken/',
-        'success': function (up,file,info) {
-            var imageInput = $("input[name='image_url']");
-            imageInput.val(file.name);
-        }
+    $('#upload-btn').change(function (e) {
+        e.preventDefault();
+        formdata = new FormData();
+        formdata.append('file', e.target.files[0]);
+        $.ajax({
+            type:"POST",                             //请求的类型
+            url:"/cms/uploadimg/",                  //请求的路径
+            data: formdata  ,                    //请求的参数
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            beforeSend:function(xhr,settings) {
+				if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    var csrftoken = $('meta[name=csrf-token]').attr('content');
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+			},
+            success: function (msg) {                 //成功返回触发的方法
+                const { code, data, message } = msg;
+                if(code == 200){
+                    const  { url } = data;
+                    var imageInput = $("input[name='image_url']");
+                    imageInput.val(url);
+                }
+            },
+            //请求失败触发的方法
+            error:function(XMLHttpRequest, textStatus, errorThrown){
+                console.log("ajax请求失败");
+                console.log("请求对象XMLHttpRequest: "+XMLHttpRequest);
+                console.log("错误类型textStatus: "+textStatus);
+                console.log("异常对象errorThrown: "+errorThrown);
+            }
+        });
     });
 });

@@ -8,6 +8,7 @@ from flask import (
 )
 from exts import db
 from .forms import SignupFrom, SigninForm
+from ..models import Banners
 from .models import FrontUserModel
 from untils import restful, safeutils
 import config
@@ -18,7 +19,11 @@ bp = Blueprint('front', __name__)
 # TODO: 首页视图
 @bp.route('/')
 def homepage():
-    return render_template('front/front_index.html')
+    banners = Banners.query.order_by(Banners.priority.desc()).all()
+    context = {
+        'banners': banners
+    }
+    return render_template('front/front_index.html', **context)
 
 
 # TODO: 注册页面视图
