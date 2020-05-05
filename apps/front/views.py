@@ -8,7 +8,7 @@ from flask import (
 )
 from exts import db
 from .forms import SignupFrom, SigninForm
-from ..models import Banners
+from ..models import Banners, Boards
 from .models import FrontUserModel
 from untils import restful, safeutils
 import config
@@ -20,8 +20,10 @@ bp = Blueprint('front', __name__)
 @bp.route('/')
 def homepage():
     banners = Banners.query.order_by(Banners.priority.desc()).all()
+    boards = Boards.query.all()
     context = {
-        'banners': banners
+        'banners': banners,
+        'boards': boards
     }
     return render_template('front/front_index.html', **context)
 

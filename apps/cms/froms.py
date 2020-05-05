@@ -55,3 +55,13 @@ class AddBanerForm(BaseForm):
 # TODO: 更改轮播图片校验器
 class UpdateBannerForm(AddBanerForm):
     banner_id = StringField(validators=[DataRequired(message='图片ID不能为空')])
+
+
+# TODO: 新增板块校验器
+class AddBoardsForm(BaseForm):
+    name = StringField(validators=[DataRequired(message='板块名称不能为空')])
+
+
+# TODO: 修改板块校验器
+class UpdateBoardsForm(AddBoardsForm):
+    board_id = StringField(validators=[DataRequired(message='板块ID不能为空')])

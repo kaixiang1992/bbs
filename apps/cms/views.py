@@ -1,7 +1,15 @@
 from flask import Blueprint, views, render_template, request, session, redirect, url_for, flash, jsonify, g
-from .froms import LoginForm, ResetPwdForm, ResetEamilForm, AddBanerForm, UpdateBannerForm
+from .froms import (
+    LoginForm,
+    ResetPwdForm,
+    ResetEamilForm,
+    AddBanerForm,
+    UpdateBannerForm,
+    AddBoardsForm,
+    UpdateBoardsForm
+)
 from .models import CmsUser, db, CMSPersmission
-from ..models import Banners
+from ..models import (Banners, Boards)
 from .decorators import login_required, permission_required
 from flask_mail import Message
 from exts import mail
@@ -161,7 +169,11 @@ class EmailCaptchaView(views.MethodView):
 @login_required
 @permission_required(CMSPersmission.BOARDER)
 def boards():
-    return render_template('cms/cms_boards.html')
+    boards = Boards.query.all()
+    context = {
+        'boards': boards
+    }
+    return render_template('cms/cms_boards.html', **context)
 
 
 # TODO: 评论管理
@@ -290,6 +302,58 @@ def uploadimg():
         })
     else:
         return restful.params_error(message='上传图片失败')
+
+
+# TODO: 新增板块
+@bp.route('/aboard/', methods=['POST'])
+@login_required
+@permission_required(CMSPersmission.BOARDER)
+def aboards():
+    form = AddBoardsForm(request.form)
+    if form.validate():
+        name = form.name.data
+        board = Boards(name=name)
+        db.session.add(board)
+        db.session.commit()
+        return restful.success(message='板块添加成功')
+    else:
+        return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
+
+
+# TODO: 更改板块
+@bp.route('/uboard/', methods=['POST'])
+@login_required
+@permission_required(CMSPersmission.BOARDER)
+def uboards():
+    form = UpdateBoardsForm(request.form)
+    if form.validate():
+        name = form.name.data
+        board_id = form.board_id.data
+        board = Boards.query.get(board_id)
+        if board:
+            board.name = name
+            db.session.commit()
+            return restful.success(message='板块更新成功')
+        else:
+            return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
+    else:
+        return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
+
+
+# TODO: 删除板块
+@bp.route('/dboard/', methods=['POST'])
+@login_required
+@permission_required(CMSPersmission.BOARDER)
+def dboards():
+    board_id = request.form.get('board_id')
+    if board_id is None:
+        return restful.params_error(message='板块ID不能为空')
+    board = Boards.query.get(board_id)
+    if not board:
+        return restful.params_error(message='参数错误')
+    db.session.delete(board)
+    db.session.commit()
+    return restful.success(message='删除成功')
 
 
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录
