@@ -7,9 +7,10 @@ from flask import (
     session
 )
 from exts import db
-from .forms import SignupFrom, SigninForm
-from ..models import Banners, Boards
+from .forms import SignupFrom, SigninForm, APostForm
+from ..models import Banners, Boards, PostModel
 from .models import FrontUserModel
+from .decorators import login_required
 from untils import restful, safeutils
 import config
 
@@ -79,7 +80,30 @@ class SigninView(views.MethodView):
             return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
 
 
+# TODO: 发布帖子视图
+class APostView(views.MethodView):
+    decorators = [login_required]
+
+    def get(self):
+        return render_template('front/front_apost.html')
+
+    def post(self):
+        form = APostForm(request.form)
+        if form.validate():
+            title = form.title.data
+            context = form.context.data
+            board_id = form.board_id.data
+            post_item = PostModel(title=title, context=context, board_id=board_id)
+            db.session.add(post_item)
+            db.session.commit()
+            return restful.success(message='帖子发布成功')
+        else:
+            return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
+
+
 # TODO: 注册页面视图
 bp.add_url_rule('/signup/', endpoint='signup', view_func=SignupView.as_view('signup'))
 # TODO: 登录页面视图
 bp.add_url_rule('/signin/', endpoint='signin', view_func=SigninView.as_view('signin'))
+# TODO: 发布帖子视图
+bp.add_url_rule('/apost/', endpoint='apost', view_func=APostView.as_view('apost'))

@@ -1,6 +1,6 @@
 from apps.froms import BaseForm
-from wtforms import StringField, ValidationError
-from wtforms.validators import Regexp, EqualTo, Length, Optional
+from wtforms import StringField, ValidationError, IntegerField
+from wtforms.validators import Regexp, EqualTo, Length, Optional, DataRequired
 from untils import cacheuntil
 
 
@@ -34,4 +34,11 @@ class SignupFrom(BaseForm):
 class SigninForm(BaseForm):
     telephone = StringField(validators=[Regexp(regex=r'1[356789]\d{9}', message='请输入正确的手机号')])  # TODO: 手机号
     password = StringField(validators=[Regexp(regex=r'\w{8,12}', message='请输入正确的密码')])  # TODO: 密码
-    remember = StringField()    # TODO: 记住我
+    remember = StringField()  # TODO: 记住我
+
+
+# TODO: 发布帖子校验器
+class APostForm(BaseForm):
+    title = StringField(validators=[DataRequired(message='标题不能为空')])
+    context = StringField(validators=[DataRequired(message='内容不能为空')])
+    board_id = IntegerField(validators=[DataRequired(message='板块必须选择')])
