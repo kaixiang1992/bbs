@@ -4,7 +4,8 @@ from flask import (
     render_template,
     request,
     url_for,
-    session
+    session,
+    g
 )
 from exts import db
 from .forms import SignupFrom, SigninForm, APostForm
@@ -22,9 +23,11 @@ bp = Blueprint('front', __name__)
 def homepage():
     banners = Banners.query.order_by(Banners.priority.desc()).all()
     boards = Boards.query.all()
+    posts = PostModel.query.all()
     context = {
         'banners': banners,
-        'boards': boards
+        'boards': boards,
+        'posts': posts
     }
     return render_template('front/front_index.html', **context)
 
@@ -57,10 +60,11 @@ class SigninView(views.MethodView):
     def get(self):
         return_to = request.referrer
         cururl = request.url
-        if return_to and return_to != cururl and return_to != url_for(endpoint='front.signup') and safeutils(return_to):
-            return render_template('front/front_signin.html', return_to=return_to)
-        else:
-            return render_template('front/front_signin.html')
+        # if return_to and return_to != cururl and return_to != url_for(endpoint='front.signup') and safeutils(return_to):
+        #     return render_template('front/front_signin.html', return_to=return_to)
+        # else:
+        #     return render_template('front/front_signin.html')
+        return render_template('front/front_signin.html')
 
     def post(self):
         form = SigninForm(request.form)
@@ -85,15 +89,17 @@ class APostView(views.MethodView):
     decorators = [login_required]
 
     def get(self):
-        return render_template('front/front_apost.html')
+        boards = Boards.query.all()
+        return render_template('front/front_apost.html', boards=boards)
 
     def post(self):
         form = APostForm(request.form)
         if form.validate():
             title = form.title.data
-            context = form.context.data
+            context = form.content.data
             board_id = form.board_id.data
-            post_item = PostModel(title=title, context=context, board_id=board_id)
+            author_id = g.front_user.id
+            post_item = PostModel(title=title, context=context, board_id=board_id, author_id=author_id)
             db.session.add(post_item)
             db.session.commit()
             return restful.success(message='帖子发布成功')

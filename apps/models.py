@@ -29,6 +29,8 @@ class PostModel(db.Model):
     context = db.Column(db.TEXT, nullable=False)
     create_time = db.Column(db.DATETIME, default=datetime.now)
     board_id = db.Column(db.Integer, db.ForeignKey('boards.id'))
+    author_id = db.Column(db.String(100), db.ForeignKey('front_user.id'))
 
     # TODO: 逆向模型引用
     board = db.relationship('Boards', backref='posts')
+    author = db.relationship('FrontUserModel', backref='posts')
