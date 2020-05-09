@@ -4,13 +4,16 @@ from flask import (
     render_template,
     request,
     url_for,
-    session
+    session,
+    g,
+    abort
 )
 from exts import db
 from .forms import SignupFrom, SigninForm, APostForm
 from ..models import Banners, Boards, PostModel
 from .models import FrontUserModel
 from .decorators import login_required
+from flask_paginate import Pagination, get_page_parameter
 from untils import restful, safeutils
 import config
 
@@ -18,15 +21,45 @@ bp = Blueprint('front', __name__)
 
 
 # TODO: 首页视图
-@bp.route('/')
+@bp.route('/', endpoint='index')
 def homepage():
     banners = Banners.query.order_by(Banners.priority.desc()).all()
     boards = Boards.query.all()
+    bd = request.args.get('bd', type=int, default=None)  # TODO: 板块ID
+    page = request.args.get(get_page_parameter(), type=int, default=1)  # TODO: 读取页数
+    start = (page - 1) * config.PER_PAGE
+    end = start + config.PER_PAGE
+    query_obj = None
+    total = None
+    if bd:
+        query_obj = PostModel.query.filter_by(board_id=bd).order_by(PostModel.create_time.desc())
+        posts = query_obj.slice(start, end)
+        total = query_obj.count()
+    else:
+        query_obj = PostModel.query.order_by(PostModel.create_time.desc())
+        posts = query_obj.slice(start, end)
+        total = query_obj.count()
+    pagination = Pagination(bs_version=3, page=page, total=total)
     context = {
         'banners': banners,
-        'boards': boards
+        'boards': boards,
+        'posts': posts,
+        'pagination': pagination,
+        'cruent_board_id': bd
     }
     return render_template('front/front_index.html', **context)
+
+
+# TODO: 帖子详情
+@bp.route('/post/<post_id>/', endpoint='postdetails')
+def post_details(post_id):
+    post = PostModel.query.filter_by(id=post_id).one_or_none()
+    if not post:
+        abort(404)
+    context = {
+        'post': post
+    }
+    return render_template('front/front_post_detail.html', **context)
 
 
 # TODO: 注册页面视图
@@ -57,10 +90,11 @@ class SigninView(views.MethodView):
     def get(self):
         return_to = request.referrer
         cururl = request.url
-        if return_to and return_to != cururl and return_to != url_for(endpoint='front.signup') and safeutils(return_to):
-            return render_template('front/front_signin.html', return_to=return_to)
-        else:
-            return render_template('front/front_signin.html')
+        # if return_to and return_to != cururl and return_to != url_for(endpoint='front.signup') and safeutils(return_to):
+        #     return render_template('front/front_signin.html', return_to=return_to)
+        # else:
+        #     return render_template('front/front_signin.html')
+        return render_template('front/front_signin.html')
 
     def post(self):
         form = SigninForm(request.form)
@@ -85,7 +119,8 @@ class APostView(views.MethodView):
     decorators = [login_required]
 
     def get(self):
-        return render_template('front/front_apost.html')
+        boards = Boards.query.all()
+        return render_template('front/front_apost.html', boards=boards)
 
     def post(self):
         form = APostForm(request.form)
@@ -93,7 +128,8 @@ class APostView(views.MethodView):
             title = form.title.data
             context = form.context.data
             board_id = form.board_id.data
-            post_item = PostModel(title=title, context=context, board_id=board_id)
+            author_id = g.front_user.id
+            post_item = PostModel(title=title, context=context, board_id=board_id, author_id=author_id)
             db.session.add(post_item)
             db.session.commit()
             return restful.success(message='帖子发布成功')

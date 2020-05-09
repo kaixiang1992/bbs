@@ -101,5 +101,21 @@ def init_front_user(telephone, username, password, email):
     print('初始化前端用户成功...')
 
 
+# TODO: 创建测试文章
+@manager.command
+def create_test_posts():
+    user = front_model.FrontUserModel.query.first()
+    board = model.Boards.query.first()
+    for x in range(1, 100):
+        title = '标题 %s' % x
+        context = '内容 %s' % x
+        board_id = board.id
+        author_id = user.id
+        post = model.PostModel(title=title, context=context, board_id=board_id, author_id=author_id)
+        db.session.add(post)
+        db.session.commit()
+    print('新增测试帖子成功！...')
+
+
 if __name__ == '__main__':
     manager.run()

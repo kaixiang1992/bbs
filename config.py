@@ -16,3 +16,6 @@ MAIL_USERNAME = "1058628890@qq.com"
 MAIL_PASSWORD = "xykgytfhsvumbfgg"
 MAIL_DEFAULT_SENDER = "1058628890@qq.com"
 
+# TODO: 基础分页配置
+PER_PAGE = 10
+
