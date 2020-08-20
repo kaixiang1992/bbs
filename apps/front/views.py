@@ -126,7 +126,7 @@ class APostView(views.MethodView):
         form = APostForm(request.form)
         if form.validate():
             title = form.title.data
-            context = form.context.data
+            context = form.content.data
             board_id = form.board_id.data
             author_id = g.front_user.id
             post_item = PostModel(title=title, context=context, board_id=board_id, author_id=author_id)

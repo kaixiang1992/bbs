@@ -40,5 +40,5 @@ class SigninForm(BaseForm):
 # TODO: 发布帖子校验器
 class APostForm(BaseForm):
     title = StringField(validators=[DataRequired(message='标题不能为空')])
-    context = StringField(validators=[DataRequired(message='内容不能为空')])
+    content = StringField(validators=[DataRequired(message='内容不能为空')])
     board_id = IntegerField(validators=[DataRequired(message='板块必须选择')])
