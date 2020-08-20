@@ -42,3 +42,9 @@ class APostForm(BaseForm):
     title = StringField(validators=[DataRequired(message='标题不能为空')])
     context = StringField(validators=[DataRequired(message='内容不能为空')])
     board_id = IntegerField(validators=[DataRequired(message='板块必须选择')])
+
+
+# TODO: 发布评论校验器
+class ACommentForm(BaseForm):
+    content = StringField(validators=[DataRequired(message='评论内容不能为空')])
+    post_id = IntegerField(validators=[DataRequired(message='帖子ID不能为空')])

@@ -34,3 +34,29 @@ class PostModel(db.Model):
     # TODO: 逆向模型引用
     board = db.relationship('Boards', backref='posts')
     author = db.relationship('FrontUserModel', backref='posts')
+
+
+# TODO: 评论模型
+class CommentModel(db.Model):
+    __tablename__ = 'comment'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    content = db.Column(db.TEXT, nullable=False)
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    author_id = db.Column(db.String(100), db.ForeignKey('front_user.id'))
+
+    # TODO: 逆向模型引用
+    post = db.relationship('PostModel', backref='comments')
+    author = db.relationship('FrontUserModel', backref='comments')
+
+
+# TODO: 加精模型
+class HighlightPostModel(db.Model):
+    __tablename__ = 'highlight_post'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+
+    # TODO: 逆向模型引用
+    post = db.relationship('PostModel', backref='highlight')
+

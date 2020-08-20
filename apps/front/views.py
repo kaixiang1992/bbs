@@ -9,8 +9,8 @@ from flask import (
     abort
 )
 from exts import db
-from .forms import SignupFrom, SigninForm, APostForm
-from ..models import Banners, Boards, PostModel
+from .forms import SignupFrom, SigninForm, APostForm, ACommentForm
+from ..models import Banners, Boards, PostModel, CommentModel
 from .models import FrontUserModel
 from .decorators import login_required
 from flask_paginate import Pagination, get_page_parameter
@@ -54,10 +54,12 @@ def homepage():
 @bp.route('/post/<post_id>/', endpoint='postdetails')
 def post_details(post_id):
     post = PostModel.query.filter_by(id=post_id).one_or_none()
+    comments = CommentModel.query.filter_by(post_id=post_id).order_by(CommentModel.create_time.desc())
     if not post:
         abort(404)
     context = {
-        'post': post
+        'post': post,
+        'comments': comments
     }
     return render_template('front/front_post_detail.html', **context)
 
@@ -137,9 +139,33 @@ class APostView(views.MethodView):
             return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
 
 
+# TODO: 发布评论
+class AComment(views.MethodView):
+    decorators = [login_required]
+
+    def post(self):
+        form = ACommentForm(request.form)
+        if form.validate():
+            content = form.content.data
+            post_id = form.post_id.data
+            author_id = g.front_user.id
+            post = PostModel.query.get(post_id)
+            if post:
+                comment = CommentModel(content=content, post_id=post_id, author_id=author_id)
+                db.session.add(comment)
+                db.session.commit()
+                return restful.success(message='评论发布成功')
+            else:
+                return restful.params_error(message='评论帖子不存在')
+        else:
+            return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
+
+
 # TODO: 注册页面视图
 bp.add_url_rule('/signup/', endpoint='signup', view_func=SignupView.as_view('signup'))
 # TODO: 登录页面视图
 bp.add_url_rule('/signin/', endpoint='signin', view_func=SigninView.as_view('signin'))
 # TODO: 发布帖子视图
 bp.add_url_rule('/apost/', endpoint='apost', view_func=APostView.as_view('apost'))
+# TODO: 发布评论视图
+bp.add_url_rule('/acomment/', endpoint='acomment', view_func=AComment.as_view('acomment'))

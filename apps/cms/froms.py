@@ -65,3 +65,8 @@ class AddBoardsForm(BaseForm):
 # TODO: 修改板块校验器
 class UpdateBoardsForm(AddBoardsForm):
     board_id = StringField(validators=[DataRequired(message='板块ID不能为空')])
+
+
+# TODO: 精华帖子板块校验器
+class HighlightPostFrom(BaseForm):
+    post_id = IntegerField(validators=[DataRequired(message='帖子ID不能为空')])

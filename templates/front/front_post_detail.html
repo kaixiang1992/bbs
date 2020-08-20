@@ -6,6 +6,9 @@
 {% endblock %}
 
 {% block head %}
+    <script src="{{ static('ueditor/ueditor.config.js') }}"></script>
+    <script src="{{ static('ueditor/ueditor.all.min.js') }}"></script>
+    <script src="{{ static('front/js/front_post_detail.js') }}"></script>
     <link rel="stylesheet" href="{{ static('front/css/front_post_detail.css') }}">
 {% endblock %}
 
@@ -23,6 +26,38 @@
             <article class="post-content" id="post-content" data-id="{{ post.id }}">
                 {{ post.context|safe }}
             </article>
+        </div>
+        <div class="comment-group">
+            <h3>评论列表</h3>
+            <ul class="comment-list-group">
+                {% for comment in comments %}
+                    <li>
+                        <div class="avatar-group">
+                            <img src="{{ comment.author.avatar or static('common/images/logo.png') }}" alt="">
+                        </div>
+                        <div class="comment-content">
+                            <p class="author-info">
+                                <span>{{ comment.author.username }}</span>
+                                <span>{{ comment.create_time }}</span>
+                            </p>
+                            <p class="comment-txt">
+                                {{ comment.content|safe }}
+                            </p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="add-comment-group">
+            <h3>发表评论</h3>
+            <script id="editor" type="text/plain" style="height:100px;"></script>
+            <div class="comment-btn-group">
+                {% if g.front_user %}
+                    <button class="btn btn-primary" id="comment-btn">发表评论</button>
+                {% else %}
+                    <a href="/" class="btn btn-primary">发表评论</a>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div class="sm-container"></div>

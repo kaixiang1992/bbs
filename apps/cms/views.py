@@ -6,13 +6,15 @@ from .froms import (
     AddBanerForm,
     UpdateBannerForm,
     AddBoardsForm,
-    UpdateBoardsForm
+    UpdateBoardsForm,
+    HighlightPostFrom
 )
 from .models import CmsUser, db, CMSPersmission
-from ..models import (Banners, Boards)
+from ..models import (Banners, Boards, PostModel, HighlightPostModel)
 from .decorators import login_required, permission_required
 from flask_mail import Message
 from exts import mail
+from flask_paginate import Pagination, get_page_parameter
 from untils import cacheuntil
 import config
 from untils import restful
@@ -213,7 +215,18 @@ def fusers():
 @login_required
 @permission_required(CMSPersmission.POSTER)
 def posts():
-    return render_template('cms/cms_posts.html')
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    start = (page - 1) * config.PER_PAGE
+    end = start + config.PER_PAGE
+    query_obj = PostModel.query.order_by(PostModel.create_time.desc())
+    post_list = query_obj.slice(start, end)
+    total = query_obj.count()
+    pagination = Pagination(bs_version=3, page=page, total=total)
+    context = {
+        'posts': post_list,
+        'pagination': pagination
+    }
+    return render_template('cms/cms_posts.html', **context)
 
 
 # TODO: 轮播图管理
@@ -354,6 +367,45 @@ def dboards():
     db.session.delete(board)
     db.session.commit()
     return restful.success(message='删除成功')
+
+
+# TODO: 加精
+@bp.route('/hpost/',methods=['POST'])
+@login_required
+@permission_required(CMSPersmission.POSTER)
+def highlightpost():
+    form = HighlightPostFrom(request.form)
+    if form.validate():
+        post_id = form.post_id.data
+        post = PostModel.query.filter_by(id=post_id).one_or_none()
+        if post:
+            highlightpost = HighlightPostModel(post_id=post_id)
+            db.session.add(highlightpost)
+            db.session.commit()
+            return restful.success(message='加精成功')
+        else:
+            return restful.params_error(message='post_id不存在')
+    else:
+        return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
+
+
+# TODO: 取消加精
+@bp.route('/uhpost/',methods=['POST'])
+@login_required
+@permission_required(CMSPersmission.POSTER)
+def unhighlightpost():
+    form = HighlightPostFrom(request.form)
+    if form.validate():
+        post_id = form.post_id.data
+        highlight = HighlightPostModel.query.filter_by(post_id=post_id).one_or_none()
+        if highlight:
+            db.session.delete(highlight)
+            db.session.commit()
+            return restful.success(message='取消加精成功')
+        else:
+            return restful.params_error(message='记录不存在')
+    else:
+        return restful.params_error(message=form.get_random_error(), data=form.get_all_errors())
 
 
 bp.add_url_rule('/login/', endpoint='login', view_func=LoginView.as_view('login'))  # TODO: 登录
