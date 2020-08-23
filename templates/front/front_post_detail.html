@@ -20,8 +20,8 @@
                 <span>发表时间：{{ post.create_time }}</span>
                 <span>作者：{{ post.author.username }}</span>
                 <span>所属板块：{{ post.board.name }}</span>
-                <span>阅读数：{{ post.read_count }}</span>
-                <span>评论数：0</span>
+                <span>阅读数：{{ post.read_count or 0}}</span>
+                <span>评论数：{{ post.comments|length }}</span>
             </p>
             <article class="post-content" id="post-content" data-id="{{ post.id }}">
                 {{ post.context|safe }}

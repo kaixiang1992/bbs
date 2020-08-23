@@ -10,9 +10,10 @@ from flask import (
 )
 from exts import db
 from .forms import SignupFrom, SigninForm, APostForm, ACommentForm
-from ..models import Banners, Boards, PostModel, CommentModel
+from ..models import Banners, Boards, PostModel, CommentModel, HighlightPostModel
 from .models import FrontUserModel
 from .decorators import login_required
+from sqlalchemy.sql import func
 from flask_paginate import Pagination, get_page_parameter
 from untils import restful, safeutils
 import config
@@ -26,17 +27,28 @@ def homepage():
     banners = Banners.query.order_by(Banners.priority.desc()).all()
     boards = Boards.query.all()
     bd = request.args.get('bd', type=int, default=None)  # TODO: 板块ID
+    st = request.args.get('st', type=int, default=1)
     page = request.args.get(get_page_parameter(), type=int, default=1)  # TODO: 读取页数
     start = (page - 1) * config.PER_PAGE
     end = start + config.PER_PAGE
     query_obj = None
     total = None
+    if st == 1:  # TODO: 最新
+        query_obj = PostModel.query.order_by(PostModel.create_time.desc())
+    elif st == 2:  # TODO: 精华帖子
+        query_obj = db.session.query(PostModel).outerjoin(HighlightPostModel).order_by(
+            HighlightPostModel.create_time.desc(), PostModel.create_time.desc())
+    elif st == 3:  # TODO: 点赞最多
+        query_obj = PostModel.query.order_by(PostModel.create_time.desc())
+    else:  # TODO: 评论最多
+        query_obj = db.session.query(PostModel).outerjoin(CommentModel).group_by(PostModel.id).order_by(
+            func.count(CommentModel.post_id).desc(), PostModel.create_time.desc())
     if bd:
-        query_obj = PostModel.query.filter_by(board_id=bd).order_by(PostModel.create_time.desc())
+        query_obj = query_obj.filter(PostModel.board_id == bd)
         posts = query_obj.slice(start, end)
         total = query_obj.count()
     else:
-        query_obj = PostModel.query.order_by(PostModel.create_time.desc())
+        query_obj = query_obj
         posts = query_obj.slice(start, end)
         total = query_obj.count()
     pagination = Pagination(bs_version=3, page=page, total=total)
@@ -45,7 +57,8 @@ def homepage():
         'boards': boards,
         'posts': posts,
         'pagination': pagination,
-        'cruent_board_id': bd
+        'cruent_board_id': bd,
+        'current_st': st
     }
     return render_template('front/front_index.html', **context)
 
