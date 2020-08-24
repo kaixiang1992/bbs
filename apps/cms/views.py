@@ -22,6 +22,7 @@ import string
 import random
 import os
 import oss2
+from tasks import send_mail
 
 bp = Blueprint('cms', __name__, url_prefix='/cms')
 
@@ -153,14 +154,16 @@ class EmailCaptchaView(views.MethodView):
         captcha.extend(list(string.digits))  # TODO: 字符串 '0123456789'拼连
         random_list = random.sample(captcha, 6)  # TODO: 随机从列表中抽取6个元素
         captcha_str = ''.join(random_list)
-        message = Message('邮箱验证码',
-                          recipients=[email],
-                          body='您的验证码为：%s，有效期为5分钟!' % captcha_str,
-                          sender='1058628890@qq.com')
-        try:  # TODO: 捕获发送验证码异常
-            mail.send(message=message)
-        except:
-            return restful.server_error(message='服务器错误，发送失败.')
+        # message = Message('邮箱验证码',
+        #                   recipients=[email],
+        #                   body='您的验证码为：%s，有效期为5分钟!' % captcha_str,
+        #                   sender='1058628890@qq.com')
+        # try:  # TODO: 捕获发送验证码异常
+        #     mail.send(message=message)
+        # except:
+        #     return restful.server_error(message='服务器错误，发送失败.')
+
+        send_mail.delay('邮箱验证码', [email], '您的验证码为：%s，有效期为5分钟!' % captcha_str, '1058628890@qq.com')
         # TODO: redis存储对应邮箱验证码
         cacheuntil.set(key=email, value=captcha_str, ex=300)
         return restful.success(message='验证码发送成功')

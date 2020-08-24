@@ -19,3 +19,7 @@ MAIL_DEFAULT_SENDER = "1058628890@qq.com"
 # TODO: 基础分页配置
 PER_PAGE = 10
 
+# TODO: celery基础配置
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+

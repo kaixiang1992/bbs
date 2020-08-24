@@ -4,6 +4,7 @@ from untils.captcha import Captcha
 from exts import smsapi
 from .forms import SMSCaptchaForm
 from io import BytesIO
+from tasks import send_sms
 
 bp = Blueprint('common', __name__, url_prefix='/c')
 
@@ -28,6 +29,8 @@ def sms_captcha():
     if form.validate():
         telephone = form.telephone.data  # TODO: 获取手机号
         code = Captcha.gene_text(number=4)  # TODO: 获取随机4位数字字符串
+        # send_sms.delay(telephone, code)
+        # return restful.success(message='短信验证码发送成功!')
         resp = smsapi.send_sms(telephone=telephone, param=code)
         if resp:
             cacheuntil.set(telephone, code)  # TODO: redis存储短信验证码
